@@ -1,114 +1,43 @@
-import { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+
+import { SafeAreaView } from "react-native";
+import Home from "./app/screens/Home";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import About from "./app/screens/About";
+import Navbar from "./app/components/Navbar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { ThemeContext } from "./app/Contexts/ThemeContext";
+import { useEffect, useState } from "react";
 
 export default function App() {
-  const [todo, setTodo] = useState("");
-  const [todos, setTodos] = useState([]);
-  //adding the todo
-  const addTodo = () => {
-    setTodos((prev) => [...prev, todo]);
-    setTodo("");
-  };
-  //deleting the todo
-  const deleteTodo = (e, index) => {
-    console.log("bhjgvccx");
-    const updatedTodos = todos.filter((todo, i) => i !== index);
-    setTodos(updatedTodos);
-  };
-  return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Todo App</Text>
-      <View style={styles.form}>
-        <TextInput
-          value={todo}
-          onChangeText={(value) => setTodo(value)}
-          style={styles.field}
-          keyboardType="default"
-        />
-        <View style={styles.button}>
-          <TouchableOpacity onPress={addTodo}>
-            <Text>Add</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <View style={styles.todos}>
-        {todos.map((todo, index) => {
-          return (
-            <View
-              key={index}
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                backgroundColor: "dodgerblue",
-                padding: 10,
-                borderRadius: 13,
-                minWidth: "50vw",
-                alignItems:'center',
-                maxWidth:'auto'
-              }}
-            >
-              <Text style={{color:'white',padding:5}}>{todo}</Text>
-              <TouchableOpacity
-                style={{ backgroundColor: "red", padding: 5 }}
-                onPress={(e) => deleteTodo(e, index)}
-              >
-                <Text style={{ color: "white", borderRadius:12}}>Delete</Text>
-              </TouchableOpacity>
-            </View>
-          );
-        })}
-      </View>
-    </View>
-  );
-}
+   const Stack = createStackNavigator();
+   const [currentMode, setCurrentMode] = useState('false')
+   const currentTheme = async()=>{
+    const mode = await AsyncStorage.getItem('theme');
+    setCurrentMode(mode?mode:'false')
+   }
+   useEffect(()=>{
+    currentTheme();
+   }, [currentMode])
+   async function themeHandler () {
+    const mode = await AsyncStorage.getItem('theme')
+    const newMode = mode === 'true'  ? 'false':'true';
+    await AsyncStorage.setItem('theme', newMode);
+    setCurrentMode(newMode)
+  }
 
-const styles = StyleSheet.create({
-  todos: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderBlockColor: "gray",
-  },
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "flex-start",
-  },
-  heading: {
-    fontWeight: "900",
-    fontSize: 25,
-  },
-  form: {
-    flex: 1 / 4,
-    margin: 1,
-    display: "flex",
-    justifyContent: "space-between",
-    padding: 3,
-    alignItems: "center",
-    flexDirection: "row",
-  },
-  field: {
-    backgroundColor: "lightgray",
-    borderRadius: 12,
-    padding: 8,
-    width: 250,
-    margin: "5",
-  },
-  button: {
-    backgroundColor: "dodgerblue",
-    fontSize: 12,
-    color: "white",
-    borderRadius: 15,
-    padding: 12,
-    width: 50,
-    margin: 2,
-  },
-});
+  return (
+   <SafeAreaView style={{flex:1}}>
+    <ThemeContext.Provider value={{themeHandler, currentMode}}>
+     <NavigationContainer>
+      <Navbar/>
+         <Stack.Navigator initialRouteName="Home" screenOptions={{headerShown:false}}>
+          <Stack.Screen name="Home" component={Home} />
+          <Stack.Screen name="About" component={About} />
+         </Stack.Navigator>
+     </NavigationContainer>
+     </ThemeContext.Provider>
+   </SafeAreaView>
+  );
+
+  }
