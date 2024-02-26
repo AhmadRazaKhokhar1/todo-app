@@ -5,6 +5,7 @@ import {
     TextInput,
     View,
     Pressable,
+    Alert,
 } from "react-native";
 import { ThemeContext } from "../Contexts/ThemeContext";
 export default function Home() {
@@ -57,6 +58,9 @@ export default function Home() {
   const [todos, setTodos] = useState([]);
   //adding the todo
   const addTodo = () => {
+    if(!todo&&todo===''){
+        return alert('The field should not be empty! please try again')
+    }
     setTodos((prev) => [...prev, todo]);
     setTodo("");
   };

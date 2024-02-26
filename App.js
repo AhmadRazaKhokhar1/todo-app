@@ -27,7 +27,7 @@ export default function App() {
   }
 
   return (
-   <SafeAreaView style={{flex:1}}>
+   <SafeAreaView style={{flex:1, pointerEvents:'auto'}}>
     <ThemeContext.Provider value={{themeHandler, currentMode}}>
      <NavigationContainer>
       <Navbar/>

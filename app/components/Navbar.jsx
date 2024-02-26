@@ -29,7 +29,7 @@ export default function Navbar() {
 
       <View>
         <Pressable onPress={() => themeHandler()}>
-          <Text style={{color:'white'}} selectable={false}>{currentMode === "false" ? "Dark Mode" : "Light Mode"}</Text>
+          <Text style={{color:'white', userSelect:'none'}}>{currentMode === "false" ? "Dark Mode" : "Light Mode"}</Text>
         </Pressable>
       </View>
       <View
