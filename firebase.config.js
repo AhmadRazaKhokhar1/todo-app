@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "@react-native-firebase/app";
 import {getFirestore} from '@react-native-firebase/firestore'
+import firebase from 'firebase/compat/app'
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -13,9 +14,12 @@ const firebaseConfig = {
   storageBucket: "todo-db561.appspot.com",
   messagingSenderId: "532232905597",
   appId: "1:532232905597:web:c90c25f2bd22868ca62214",
-  measurementId: "G-PRBV83SN4P"
+  measurementId: "G-PRBV83SN4P",
+  databaseURL: "https://todo-db561-default-rtdb.firebaseio.com",
+
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app)
+const app = firebase.initializeApp(firebaseConfig);
+// export const db = getFirestore(app);
+export const db = firebase.firestore(app)
