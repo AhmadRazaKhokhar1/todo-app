@@ -1,16 +1,17 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   StyleSheet,
   Text,
   TextInput,
   View,
   Pressable,
-  Alert,
   ScrollView,
+  Keyboard,
 } from "react-native";
 import { ThemeContext } from "../Contexts/ThemeContext";
-import { addDoc, collection } from "@react-native-firebase/firestore";
-import { db } from "../../firebase.config";
+// import { collection } from "@react-native-firebase/firestore";
+// import { db } from "../../firebase.config";
+import firebase, { db } from "../../firebase.config";
 export default function Home() {
   const { currentMode } = useContext(ThemeContext);
   // style sheet
@@ -65,19 +66,46 @@ export default function Home() {
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState([]);
   //adding the todo
-  const addTodo =async () => {
+  const addTodo = async () => {
     if (!todo && todo === "") {
       return alert("The field should not be empty! please try again");
     }
-    setTodos((prev) => [...prev, todo]);
-    const collectionRef = collection(db, 'todos');
-    await addDoc(collectionRef, todo)
+    // const collectionRef = collection(db, 'todos');
+    const collectionRef = db.collection("todos");
+    await collectionRef.add({ todo });
     setTodo("");
+    Keyboard.dismiss();
+    fetchTodos();
+    return;
   };
+  //get todos
+  async function fetchTodos() {
+    try {
+      const collectionRef = db.collection('todos');
+      const data = await collectionRef.get();
+      console.log(data.docs)
+      setTodos(data.docs);
+      return;
+    } catch (error) {
+      alert("error while fetching the data!");
+      return;
+    }
+  }
+  useEffect(()=>{
+    fetchTodos();
+  },[])
   //deleting the todo
-  const deleteTodo = (e, index) => {
-    const updatedTodos = todos.filter((todo, i) => i !== index);
-    setTodos(updatedTodos);
+  const deleteTodo = async(id) => {
+    try {
+      const collectionRef = db.collection('todos');
+      const docRef = collectionRef.doc(id);
+      await docRef.delete();
+      fetchTodos();
+      return;
+    } catch (error) {
+      alert('There was an internal server \n error while deleting todo!')
+      return;
+    }
   };
 
   return (
@@ -102,7 +130,7 @@ export default function Home() {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
       >
-        {todos.map((todo, index) => {
+        {todos?.map((todo, index) => {
           return (
             <View
               key={index}
@@ -122,10 +150,10 @@ export default function Home() {
                 marginTop: 12,
               }}
             >
-              <Text style={{ color: "white", padding: 5 }}>{todo}</Text>
+              <Text style={{ color: "white", padding: 5 }}>{todo.data()?.todo}</Text>
               <Pressable
                 style={{ backgroundColor: "red", padding: 5 }}
-                onPress={(e) => deleteTodo(e, index)}
+                onPress={() => deleteTodo(todo?.id)}
               >
                 <Text style={{ color: "white", borderRadius: 12 }}>Delete</Text>
               </Pressable>
