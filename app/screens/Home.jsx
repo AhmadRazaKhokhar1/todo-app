@@ -63,6 +63,8 @@ export default function Home() {
       margin: 2,
     },
   });
+  const [isDeleting, setIsDeleting] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [todo, setTodo] = useState("");
   const [todos, setTodos] = useState([]);
   //adding the todo
@@ -80,10 +82,12 @@ export default function Home() {
   //get todos
   async function fetchTodos() {
     try {
+      setIsLoading(true);
       const collectionRef = db.collection('todos');
       const data = await collectionRef.get();
       console.log(data.docs)
       setTodos(data.docs);
+      setIsLoading(false)
       return;
     } catch (error) {
       alert("error while fetching the data!");
@@ -96,13 +100,16 @@ export default function Home() {
   //deleting the todo
   const deleteTodo = async(id) => {
     try {
+      setIsDeleting(id)
       const collectionRef = db.collection('todos');
       const docRef = collectionRef.doc(id);
       await docRef.delete();
+      setIsDeleting(null);
       fetchTodos();
       return;
     } catch (error) {
-      alert('There was an internal server \n error while deleting todo!')
+      alert('There was an internal server \n error while deleting todo!');
+      setIsDeleting(false)
       return;
     }
   };
@@ -129,10 +136,10 @@ export default function Home() {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
       >
-        {todos?.map((todo, index) => {
+        {!isLoading?todos?.map((todo) => {
           return (
-            <View
-              key={index}
+           <View
+              key={todo.id}
               style={{
                 display: "flex",
                 flexDirection: "row",
@@ -149,16 +156,22 @@ export default function Home() {
                 marginTop: 12,
               }}
             >
-              <Text style={{ color: "white", padding: 5 }}>{todo.data()?.todo}</Text>
+              <Text style={{ color: "white", padding: 5 }}>{isDeleting===todo.id?<Text>Deleting.....</Text> : todo.data()?.todo}</Text>
               <Pressable
                 style={{ backgroundColor: "red", padding: 5 }}
                 onPress={() => deleteTodo(todo?.id)}
               >
-                <Text style={{ color: "white", borderRadius: 12 }}>Delete</Text>
+                <Text style={{ color: "white", borderRadius: 12 }}>{isDeleting===todo.id?<Text>Deleting.....</Text> :'Delete'}</Text>
               </Pressable>
             </View>
           );
-        })}
+        }):
+        <View
+       
+      >
+        <Text style={{color:'black', fontWeight:'800'}}>Loading.................</Text>
+        </View>
+        }
       </ScrollView>
     </View>
   );
