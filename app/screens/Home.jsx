@@ -11,7 +11,7 @@ import {
 import { ThemeContext } from "../Contexts/ThemeContext";
 // import { collection } from "@react-native-firebase/firestore";
 // import { db } from "../../firebase.config";
-import firebase, { db } from "../../firebase.config";
+import { db } from "../../firebase.config";
 export default function Home() {
   const { currentMode } = useContext(ThemeContext);
   // style sheet
@@ -70,7 +70,6 @@ export default function Home() {
     if (!todo && todo === "") {
       return alert("The field should not be empty! please try again");
     }
-    // const collectionRef = collection(db, 'todos');
     const collectionRef = db.collection("todos");
     await collectionRef.add({ todo });
     setTodo("");
