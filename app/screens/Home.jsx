@@ -9,9 +9,9 @@ import {
   Keyboard,
 } from "react-native";
 import { ThemeContext } from "../Contexts/ThemeContext";
-// import { collection } from "@react-native-firebase/firestore";
-// import { db } from "../../firebase.config";
 import { db } from "../../firebase.config";
+
+
 export default function Home() {
   const { currentMode } = useContext(ThemeContext);
   // style sheet
@@ -94,11 +94,11 @@ export default function Home() {
       return;
     }
   }
-  useEffect(()=>{
+  useEffect(() => {
     fetchTodos();
-  },[])
+  }, [])
   //deleting the todo
-  const deleteTodo = async(id) => {
+  const deleteTodo = async (id) => {
     try {
       setIsDeleting(id)
       const collectionRef = db.collection('todos');
@@ -136,17 +136,16 @@ export default function Home() {
         showsHorizontalScrollIndicator={false}
         showsVerticalScrollIndicator={false}
       >
-        {!isLoading?todos?.map((todo) => {
+        {!isLoading ? todos?.map((todo) => {
           return (
-           <View
+            <View
               key={todo.id}
               style={{
                 display: "flex",
                 flexDirection: "row",
                 justifyContent: "space-between",
-                backgroundColor: `${
-                  currentMode === "false" ? "dodgerblue" : "black"
-                }`,
+                backgroundColor: `${currentMode === "false" ? "dodgerblue" : "black"
+                  }`,
                 padding: 10,
                 borderRadius: 13,
                 alignItems: "center",
@@ -156,21 +155,21 @@ export default function Home() {
                 marginTop: 12,
               }}
             >
-              <Text style={{ color: "white", padding: 5 }}>{isDeleting===todo.id?<Text>Deleting.....</Text> : todo.data()?.todo}</Text>
+              <Text style={{ color: "white", padding: 5 }}>{isDeleting === todo.id ? <Text>Deleting.....</Text> : todo.data()?.todo}</Text>
               <Pressable
                 style={{ backgroundColor: "red", padding: 5 }}
                 onPress={() => deleteTodo(todo?.id)}
               >
-                <Text style={{ color: "white", borderRadius: 12 }}>{isDeleting===todo.id?<Text>Deleting.....</Text> :'Delete'}</Text>
+                <Text style={{ color: "white", borderRadius: 12 }}>{isDeleting === todo.id ? <Text>Deleting.....</Text> : 'Delete'}</Text>
               </Pressable>
             </View>
           );
-        }):
-        <View
-       
-      >
-        <Text style={{color:'black', fontWeight:'800'}}>Loading.................</Text>
-        </View>
+        }) :
+          <View
+
+          >
+            <Text style={{ color: 'black', fontWeight: '800' }}>Loading.................</Text>
+          </View>
         }
       </ScrollView>
     </View>
